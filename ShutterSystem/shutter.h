@@ -9,8 +9,8 @@
 #ifndef SHUTTER_H_
 #define SHUTTER_H_
 
-uint8_t readLightValue();
-uint8_t readTempValue();
+uint16_t readLightValue();
+float readTemperature();
 
 void sendStatusUpdate();
 
