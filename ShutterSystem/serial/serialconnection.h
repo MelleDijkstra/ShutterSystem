@@ -11,7 +11,8 @@
 #include <stdint.h>
 
 void initUART();
-void transmit(uint8_t data);
+void transmit8(uint8_t);
+void transmit16(uint16_t);
 uint8_t receive();
 
 #endif /* SERIALCONNECTION_H_ */

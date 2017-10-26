@@ -6,6 +6,10 @@
  */ 
 
  #include <stdbool.h>
+ #include <stdint.h>
+ #include "analog/analog.h"
+ #include "serial/serialconnection.h"
+ #include "helpers.h"
 
  #define TMP_PIN 0 // TMP36 pin is on A0
  #define LDR_PIN 1 // LDR pin is on A1
@@ -15,28 +19,29 @@
  #define LDR		2 
  #define SHUTTER	3 
 
- uint8_t temperature = 0;
- uint8_t lightintensity = 0;
+ float temperature = 0;
+ uint16_t lightintensity = 0;
  bool shutter_state = false;
 
- uint8_t readLightValue() {
-	temperature = readADC(TMP_PIN);
+ float readTemperature() {
+	uint16_t reading = readADC(TMP_PIN);
+
+	float voltage = (reading * 5.0) / 1024.0;
+	temperature = (voltage - 0.5) * 100;
+
 	return temperature;
  }
 
- uint8_t readTempValue() {
+ uint16_t readLightValue() {
 	lightintensity = readADC(LDR_PIN);
 	return lightintensity;
  }
 
  void sendStatusUpdate() {
 	// send temperature
-	transmit(TMP36);
-	transmit(temperature);
+	transmit16(concat(TMP36,temperature));
 	// send lightintensity
-	transmit(LDR);
-	transmit(lightintensity);
+	transmit16(concat(LDR,lightintensity));
 	// send shutter state
-	transmit(SHUTTER);
-	transmit(shutter_state);
+	transmit16(concat(SHUTTER,shutter_state));
  }
