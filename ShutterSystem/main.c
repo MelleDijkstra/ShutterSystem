@@ -7,12 +7,8 @@
 
 #include <avr/io.h>
 
+#define TMP36 0 // temperature sensor
+#define LDR 1 // light sensor
 
-int main(void)
-{
-    /* Replace with your application code */
-    while (1) 
-    {
-    }
-}
+
 
