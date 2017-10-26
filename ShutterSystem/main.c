@@ -6,9 +6,31 @@
  */ 
 
 #include <avr/io.h>
+#include "scheduler/scheduler.h"
+#include "shutter.h"
 
-#define TMP36 0 // temperature sensor
-#define LDR 1 // light sensor
+int main() {
+
+	// initialize serial communication
+	initUART();
+	// initialize Analog to Digital converter for reading TMP36 and LDR
+	initADC();
+	// initialize scheduler
+	initSCH();
+	
+	// Add tasks that need to be executed
+	SCHAddTask(readTempValue, 0, (1000 * 40)); // read temperature every 40 seconds
+	SCHAddTask(readLightValue, 0, (1000 * 30)); // read light every 30 seconds
+	SCHAddTask(sendStatusUpdate, 0, (1000 * 60)); // send status update every 1 minute
+
+	SCHStart();
+
+	while(1) {
+		SCHDispatchTasks();
+	}
+
+	return 0;
+}
 
 
 
