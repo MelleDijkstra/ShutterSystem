@@ -9,8 +9,10 @@
 #ifndef SHUTTER_H_
 #define SHUTTER_H_
 
-uint16_t readLightValue();
-float readTemperature();
+void readLightValue();
+void readTemperature();
+void calculateAverageTemperature();
+void calculateAverageLightIntensity();
 
 void sendStatusUpdate();
 

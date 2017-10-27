@@ -40,6 +40,7 @@
 #include "analog/analog.h"
 #include "shutter.h"
 #include "helpers.h"
+#include "scheduler/scheduler.h"
 
 #define UBRR_VALUE 51
 #define VREF 5
@@ -73,9 +74,6 @@ FILE usart0_str = FDEV_SETUP_STREAM(USART0SendByte, NULL, _FDEV_SETUP_WRITE);
 
 int main()
 {
-	
-	float tmp;
-
 	//initialize ADC
 	initADC();
 	//Initialize USART0
@@ -83,17 +81,15 @@ int main()
 	//assign our stream to standard I/O streams
 	stdout = &usart0_str;
 
-	while(1)
-	{
-		tmp = readTemperature();
+	initSCH();
+	SCHAddTask(readTemperature, 0, 100);
+	SCHAddTask(readLightValue, 0, 100);
+	SCHAddTask(calculateAverageTemperature, 0, 4000);
+	SCHAddTask(calculateAverageLightIntensity, 0, 3000);
+	SCHAddTask(sendStatusUpdate, 0, 6000);
+	SCHStart();
 		
-		char temperatureS[10];
-		dtostrf(tmp, 2, 2, temperatureS);
-		printf("%s degrees C\n", temperatureS);
-
-		uint16_t light = readLightValue();
-		printf("light value: %lu%%\n", map(light, 0, 1023, 0, 100));
-
-		_delay_ms(500);
+	while(1) {
+		SCHDispatchTasks();
 	}
 }
