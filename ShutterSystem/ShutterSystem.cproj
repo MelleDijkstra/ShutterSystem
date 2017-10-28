@@ -143,6 +143,12 @@
     <Compile Include="helpers.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="io\io.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="io\io.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
@@ -167,8 +173,14 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="analog\" />
+    <Folder Include="io" />
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="io\links.txt">
+      <SubType>compile</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
