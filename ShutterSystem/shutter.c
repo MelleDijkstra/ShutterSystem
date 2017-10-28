@@ -2,87 +2,86 @@
  * shutter.c
  *
  * Created: 26-10-2017 16:02:35
- *  Author: melle
+ * Author: melle
  */ 
 
  #include <stdbool.h>
  #include <stdint.h>
  #include <stdio.h>
+ #include <stdlib.h>
  #include "analog/analog.h"
  #include "serial/serialconnection.h"
  #include "helpers.h"
+ #include "shutter.h"
 
  #define TMP_PIN 0 // TMP36 pin is on A0
  #define LDR_PIN 1 // LDR pin is on A1
 
  // ID's are used for serial communication
- #define TMP36		1 
- #define LDR		2 
- #define SHUTTER	3 
+ #define TMP36		1
+ #define LDR		2
+ #define SHUTTER	3
 
- float temperature = 0;
- static float temperatures[40];
- static uint16_t lightvalues[30];
- float avg_lightintensity;
- float avg_temperature;		
+ float temperatures[MAX_TMP_READINGS];
+ uint16_t lightvalues[MAX_LDR_READINGS];
 
- uint16_t lightintensity = 0;
  int t = 0;
  int l = 0;
  bool shutter_state = false;
 
  void readTemperature() {
 	uint16_t reading = readADC(TMP_PIN);
-	char temperatureS[10];
 
 	float voltage = (reading * 5.0) / 1024.0;
-	temperature = (voltage - 0.5) * 100;
-	dtostrf(temperature, 2, 2, temperatureS);
-	printf("%s degrees C\n", temperatureS);
+	float temperature = (voltage - 0.5) * 100;
 	temperatures[t] = temperature;
-	t++;	
+
+	t = (t >= MAX_TMP_READINGS) ? 0 : t + 1;
  }
 
  void readLightValue() {
-	lightintensity = readADC(LDR_PIN);	
-	lightvalues[l] = lightintensity;
-	l++;
-	printf("Light value: %lu%%\n", map(lightintensity, 0, 1023, 0, 100));
+	lightvalues[l] = map(readADC(LDR_PIN), 0, 1023, 0, 100);
+	l = (l >= MAX_LDR_READINGS) ? 0 : l + 1;
  }
  
- void calculateAverageTemperature() {				
-	 float temp = 0.0;		
-	 int i;		
-	 
-	 for ( i = 0; i < 40; i++ ) {
-		 temp = temp + temperatures[i];
+ float calculateAverageTemperature() {
+	 float total = 0.0;
+	 //int validReadings = 0;
+
+	 for (int i = 0; i < MAX_TMP_READINGS; i++) {
+		total += temperatures[i];
 	 }
-	 
-	 avg_temperature = temp / 40.0;
+
+	 return total / MAX_TMP_READINGS;
  }
  
- void calculateAverageLightIntensity() {				
-	 float light = 0.0; 
-	 int i;			
-	 for ( i = 0; i < 30; i++ ) {
-		 light = light + lightvalues[i];
+ float calculateAverageLightIntensity() {
+	 float total = 0.0;
+	 
+	 for (int i = 0; i < MAX_LDR_READINGS; i++) {
+		 total = total + lightvalues[i];
 	 }
 	 
-	 avg_lightintensity = light / 30.0;
+	 return total / MAX_LDR_READINGS;
  }
 
  void sendStatusUpdate() {
-	 char avg_temperatureS[10];
-	
-	// send temperature
-	dtostrf(avg_temperature, 2, 2, avg_temperatureS);
+
+	// PRINT THE VALUES FOR DEBUGGING
+	char avg_temperatureS[10];
+	dtostrf(calculateAverageTemperature(), 2, 2, avg_temperatureS);
 	printf("Average temperature: %s degrees C\n", avg_temperatureS);
+
+	// send temperature
 	//transmit16(concat(TMP36,avg_temperature));
 	
+	char avg_lightS[10];
+	dtostrf(calculateAverageLightIntensity(), 2, 2, avg_lightS);
+	printf("Average light value: %s%%\n", avg_lightS);
+	
 	// send lightintensity
-	printf("Average light value: %lu%%\n", map(avg_lightintensity, 0, 1023, 0, 100));
-	// transmit16(concat(LDR, avg_lightintensity));
+	//transmit16(concat(LDR, avg_lightintensity));
 	
 	// send shutter state
-	transmit16(concat(SHUTTER,shutter_state));
+	//transmit16(concat(SHUTTER,shutter_state));
  }

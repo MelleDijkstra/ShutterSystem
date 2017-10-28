@@ -5,24 +5,25 @@
  *  Author: melle
  */ 
 
+#include <stdio.h>
 #include <avr/io.h>
 #include <stdlib.h>
 
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
-#define UBBRVAL 51
+#define UBRRVAL 51
 
 void initUART()
 {
 	// set the baud rate
-	UBRR0H = 0;
-	UBRR0L = UBBRVAL;
+	UBRR0H = (uint8_t)(UBRRVAL>>8);
+	UBRR0L = (uint8_t)UBRRVAL;
 	// disable U2X mode
 	UCSR0A = 0;
-	// enable transmitter
-	UCSR0B = _BV(TXEN0);
 	// set frame format : asynchronous, 8 data bits, 1 stop bit, no parity
-	UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);
+	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
+	// enable transmission and reception
+	UCSR0B |= (1<<RXEN0) | (1<<TXEN0);
 }
 
 void transmit8(uint8_t data)
@@ -36,12 +37,23 @@ void transmit8(uint8_t data)
 
 void transmit16(uint16_t data)
 {
-	uint8_t high_byte = (uint8_t)data >> 8; // get high byte
+	uint8_t high_byte = (uint8_t)(data>>8); // get high byte
 	uint8_t low_byte = data & 0xff; // get low byte
 	// send the 2 bytes
 	transmit8(high_byte); // first send high
 	transmit8(low_byte);  // then send low
 }
+
+// void sendstr(char* str) {
+// 	int len = strlen(str);
+// 	for (int c = 0; c < len;c++)
+// 	{
+// 		transmit8(str[c]);
+// 	}
+// 	// print line terminator
+// 	transmit8('\r');
+// 	transmit8('\n');
+// }
 
 uint8_t receive() {
 	// Wait for data to be received
@@ -50,3 +62,13 @@ uint8_t receive() {
 	return UDR0;
 }
 
+int transmitChar(char data, FILE *stream)
+{
+	if(data == '\n')
+	{
+		transmitChar('\r', stream);
+	}
+	// transmit data
+	transmit8(data);
+	return 0;
+}

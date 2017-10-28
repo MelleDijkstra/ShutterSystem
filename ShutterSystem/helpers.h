@@ -9,6 +9,8 @@
 #ifndef HELPERS_H_
 #define HELPERS_H_
 
+#include <stdint.h>
+
 long map(long, long, long, long, long);
 uint16_t concat(uint8_t, uint8_t);
 

@@ -9,10 +9,13 @@
 #ifndef SHUTTER_H_
 #define SHUTTER_H_
 
+#define MAX_TMP_READINGS 40
+#define MAX_LDR_READINGS 30
+
 void readLightValue();
 void readTemperature();
-void calculateAverageTemperature();
-void calculateAverageLightIntensity();
+float calculateAverageTemperature();
+float calculateAverageLightIntensity();
 
 void sendStatusUpdate();
 
