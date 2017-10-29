@@ -5,90 +5,76 @@
  * Author : melle
  */ 
 
-//#include <avr/io.h>
-//#include "scheduler/scheduler.h"
-//#include "shutter.h"
-//
-//int main() {
-//
-	//// initialize serial communication
-	//initUART();
-	//// initialize Analog to Digital converter for reading TMP36 and LDR
-	//initADC();
-	//// initialize scheduler
-	//initSCH();
-	//
-	//// Add tasks that need to be executed
-	//SCHAddTask(readTempValue, 0, (1000 * 40)); // read temperature every 40 seconds
-	//SCHAddTask(readLightValue, 0, (1000 * 30)); // read light every 30 seconds
-	//SCHAddTask(sendStatusUpdate, 0, (1000 * 60)); // send status update every 1 minute
-//
-	//SCHStart();
-//
-	//while(1) {
-		//SCHDispatchTasks();
-	//}
-//
-	//return 0;
-//}
-
-#include <stdio.h>
-#include <avr/io.h>
-#include <stdlib.h>
 #define F_CPU 16E6
+
+#include <avr/io.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <util/delay.h>
 #include "analog/analog.h"
-#include "shutter.h"
-#include "helpers.h"
 #include "scheduler/scheduler.h"
-
-#define UBRR_VALUE 51
-#define VREF 5
-
-void USART0Init(void)
-{
-	// Set baud rate
-	UBRR0H = (uint8_t)(UBRR_VALUE>>8);
-	UBRR0L = (uint8_t)UBRR_VALUE;
-	// Set frame format to 8 data bits, no parity, 1 stop bit
-	UCSR0C |= (1<<UCSZ01)|(1<<UCSZ00);
-	//enable transmission and reception
-	UCSR0B |= (1<<RXEN0)|(1<<TXEN0);
-}
-
-int USART0SendByte(char u8Data, FILE *stream)
-{
-	if(u8Data == '\n')
-	{
-		USART0SendByte('\r', stream);
-	}
-	//wait while previous byte is completed
-	while(!(UCSR0A&(1<<UDRE0))){};
-	// Transmit data
-	UDR0 = u8Data;
-	return 0;
-}
+#include "serial/serialconnection.h"
+#include "helpers.h"
+#include "shutter.h"
 
 //set stream pointer
-FILE usart0_str = FDEV_SETUP_STREAM(USART0SendByte, NULL, _FDEV_SETUP_WRITE);
+FILE usart0_str = FDEV_SETUP_STREAM(transmitChar, NULL, _FDEV_SETUP_WRITE);
+
+void toggleLed() {
+	static uint8_t flag = 0;
+	if (flag == 0) {
+		PORTB = 0xFF;
+		flag = 1;
+	} else {
+		PORTB = 0x00;
+		flag = 0;
+	}
+}
+
+// void heartbeat() {
+// 	printf("bonk bonk\n");
+// }
 
 int main()
 {
-	//initialize ADC
+	// USE PIN13 FOR DEBUGGING
+	DDRB = 0xFF;
+	// initialize ADC
 	initADC();
-	//Initialize USART0
-	USART0Init();
-	//assign our stream to standard I/O streams
+	// initialize UART
+	initUART();
+	// assign our stream to standard I/O streams
 	stdout = &usart0_str;
-
+	// initialize scheduler
 	initSCH();
-	SCHAddTask(readTemperature, 0, 100);
-	SCHAddTask(readLightValue, 0, 100);
-	SCHAddTask(calculateAverageTemperature, 0, 4000);
-	SCHAddTask(calculateAverageLightIntensity, 0, 3000);
-	SCHAddTask(sendStatusUpdate, 0, 6000);
+	
+	// scheduler uses period in 10ms, so to get 1 sec. you use 100 to get 1000ms.
+	// then to get 60 sec. simply multiply with 60
+
+	// every second
+	// SOMETHING IS NOT WORKING HERE?!?!
+// 	SCHAddTask(readTemperature, 0, 100);
+// 	SCHAddTask(readLightValue, 0, 100);
+// 	SCHAddTask(toggleLed, 0, 100);
+// 	SCHAddTask(heartbeat, 0, 100);
+	
+/*	SCHAddTask(sendStatusUpdate, 0, (5 * 100));*/
+
+//	These loops don't work? Something with ADC that is not working
+//	for(int i = 0; i < MAX_TMP_READINGS;i++)
+// 	{
+// 		readTemperature();
+// 	}
+// 
+// 	for(int j = 0; j < MAX_LDR_READINGS;j++)
+// 	{
+// 		readLightValue();
+// 	}
+// 
+// 	printf("DONE CALIBRATING!\n");
+
 	SCHStart();
-		
+	// keep dispatching tasks
 	while(1) {
 		SCHDispatchTasks();
 	}
