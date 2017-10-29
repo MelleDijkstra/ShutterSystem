@@ -177,10 +177,5 @@
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="io\links.txt">
-      <SubType>compile</SubType>
-    </None>
-  </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
