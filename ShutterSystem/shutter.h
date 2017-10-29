@@ -18,5 +18,6 @@ float calculateAverageTemperature();
 float calculateAverageLightIntensity();
 
 void sendStatusUpdate();
+void controllerInputInterrupt(uint8_t byte);
 
 #endif /* SHUTTER_H_ */

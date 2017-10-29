@@ -36,33 +36,40 @@
 	float temperature = (voltage - 0.5) * 100;
 	temperatures[t] = temperature;
 
-	t = (t >= MAX_TMP_READINGS) ? 0 : t + 1;
+	char tmpS[10];
+	dtostrf(temperature, 2, 2, tmpS);
+	printf("tmp: %sC\n", tmpS);
+
+	t = (t >= MAX_TMP_READINGS-1) ? 0 : t + 1;
  }
 
  void readLightValue() {
 	lightvalues[l] = map(readADC(LDR_PIN), 0, 1023, 0, 100);
-	l = (l >= MAX_LDR_READINGS) ? 0 : l + 1;
+	l = (l >= MAX_LDR_READINGS-1) ? 0 : l + 1;
  }
  
  float calculateAverageTemperature() {
 	 float total = 0.0;
-	 //int validReadings = 0;
+	 uint8_t validReadings = 0;
 
 	 for (int i = 0; i < MAX_TMP_READINGS; i++) {
+		if(temperatures[i] != 0) validReadings++;
 		total += temperatures[i];
 	 }
 
-	 return total / MAX_TMP_READINGS;
+	 return total / validReadings;
  }
  
  float calculateAverageLightIntensity() {
 	 float total = 0.0;
+	 uint8_t validReadings = 0;
 	 
 	 for (int i = 0; i < MAX_LDR_READINGS; i++) {
-		 total = total + lightvalues[i];
+		if(lightvalues[i] != 0) validReadings++;
+		total = total + lightvalues[i];
 	 }
 	 
-	 return total / MAX_LDR_READINGS;
+	 return total / validReadings;
  }
 
  void sendStatusUpdate() {
@@ -84,4 +91,8 @@
 	
 	// send shutter state
 	//transmit16(concat(SHUTTER,shutter_state));
+ }
+
+ void controllerInputInterrupt(uint8_t byte) {
+	transmit8(byte);
  }

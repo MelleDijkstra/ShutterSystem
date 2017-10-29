@@ -8,10 +8,19 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <stdlib.h>
+#include <avr/interrupt.h>
 
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
 #define UBRRVAL 51
+
+// the function pointer to listener
+void (*trigger)(uint8_t byte);
+
+// sets the trigger to given function to be notified about received data
+void setTrigger(void (*trig)(uint8_t)) {
+	trigger = trig;
+}
 
 void initUART()
 {
@@ -22,8 +31,8 @@ void initUART()
 	UCSR0A = 0;
 	// set frame format : asynchronous, 8 data bits, 1 stop bit, no parity
 	UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
-	// enable transmission and reception
-	UCSR0B |= (1<<RXEN0) | (1<<TXEN0);
+	// enable transmission and reception. Also work with interrupts RXCIE0
+	UCSR0B |= (1<<RXEN0) | (1<<TXEN0) | (1 << RXCIE0);
 }
 
 void transmit8(uint8_t data)
@@ -48,11 +57,12 @@ void transmit16(uint16_t data)
 // 	int len = strlen(str);
 // 	for (int c = 0; c < len;c++)
 // 	{
+// 		if (str[c] == '\n')
+// 		{
+// 			transmit8('\r');
+// 		}
 // 		transmit8(str[c]);
 // 	}
-// 	// print line terminator
-// 	transmit8('\r');
-// 	transmit8('\n');
 // }
 
 uint8_t receive() {
@@ -71,4 +81,10 @@ int transmitChar(char data, FILE *stream)
 	// transmit data
 	transmit8(data);
 	return 0;
+}
+
+// This interrupt runs when data is received
+ISR(USART_RX_vect) {
+	// notify the trigger that data is received
+	trigger(UDR0);
 }
