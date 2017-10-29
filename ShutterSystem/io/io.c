@@ -33,7 +33,7 @@
 	// if pin is higher then 13 then do nothing...
  }
 
- void digitalWrite(uint8_t pin, uint8_t state) {
+ void setPin(uint8_t pin, uint8_t state) {
 	state &= 1; // make sure the state is 0 or 1
 	// check which ports to use
 	if(pin < 8) {

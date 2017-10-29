@@ -5,10 +5,14 @@
  * Author: melle
  */ 
 
+ #define F_CPU 16E6
+
  #include <stdbool.h>
  #include <stdint.h>
  #include <stdio.h>
  #include <stdlib.h>
+ #include <util/delay.h>
+ #include "io/io.h"
  #include "analog/analog.h"
  #include "serial/serialconnection.h"
  #include "helpers.h"
@@ -16,6 +20,11 @@
 
  #define TMP_PIN 0 // TMP36 pin is on A0
  #define LDR_PIN 1 // LDR pin is on A1
+
+ // LED's to give the status of the shutter
+ #define LEDRED		8
+ #define LEDGREEN	9
+ #define LEDYELLOW	10
 
  // ID's are used for serial communication
  #define TMP36		1
@@ -27,7 +36,16 @@
 
  int t = 0;
  int l = 0;
- bool shutter_state = false;
+
+ enum state shutter_state = UP;
+
+ void initShutter() {
+	outputPin(LEDRED);
+	outputPin(LEDGREEN);
+	outputPin(LEDYELLOW);
+	
+	setPin(LEDGREEN, HIGH);
+ }
 
  void readTemperature() {
 	uint16_t reading = readADC(TMP_PIN);
@@ -91,8 +109,49 @@
 	
 	// send shutter state
 	//transmit16(concat(SHUTTER,shutter_state));
+
  }
 
+ // this function runs when a byte is received from controller (python)
  void controllerInputInterrupt(uint8_t byte) {
-	transmit8(byte);
+	if(byte == DOWN) {
+		printf("rolling down\n");
+		roll(DOWN);
+	} else {
+		printf("rolling up\n");
+		roll(UP);
+	}
+	printf("DONE\n");
+ }
+
+ void roll(enum state s) {
+	// do nothing if it's already in given state or given state is PROGRESS
+	// TODO: make this if statement nicer!
+	if (s == shutter_state || shutter_state == PROGRESS_UP || shutter_state == PROGRESS_DOWN) return;
+	if (s == UP) {
+		// roll up
+		setPin(LEDRED, LOW);
+		shutter_state = PROGRESS_UP;
+		emulateRoll();
+		shutter_state = UP;
+		setPin(LEDGREEN, HIGH);
+	} else if(s == DOWN) {
+		// roll down
+		setPin(LEDGREEN, LOW);
+		shutter_state = PROGRESS_DOWN;
+		emulateRoll();
+		shutter_state = DOWN;
+		setPin(LEDRED, HIGH);
+	}
+ }
+
+ void emulateRoll() {
+	 // emulate doing something
+	 for (uint8_t i = 0; i < 5;i++)
+	 {
+		 setPin(LEDYELLOW, HIGH);
+		 _delay_ms(500);
+		 setPin(LEDYELLOW, LOW);
+		 _delay_ms(500);
+	 }
  }
