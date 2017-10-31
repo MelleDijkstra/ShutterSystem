@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-void setTrigger(void (*)(uint8_t));
+void setSerialUpdateTrigger(void (*)(uint8_t));
 void initUART();
 void transmit8(uint8_t);
 void transmit16(uint16_t);
