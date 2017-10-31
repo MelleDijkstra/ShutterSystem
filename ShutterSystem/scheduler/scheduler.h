@@ -21,7 +21,4 @@ void SCHDispatchTasks(void);
 unsigned char SCHAddTask(void (*)(void), const unsigned int, const unsigned int);
 unsigned char SCHDeleteTask(const unsigned char);
 
-// hier het aantal taken aanpassen ....!!
-// Maximum number of tasks
-
 #define SCH_MAX_TASKS (5)
