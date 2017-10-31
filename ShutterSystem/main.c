@@ -8,6 +8,7 @@
 #define F_CPU 16E6
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <util/delay.h>
@@ -42,7 +43,6 @@ void heartbeat() {
 
 int main()
 {
-	outputPin(LED);
 	// initialize ADC
 	initADC();
 	// initialize UART
@@ -51,15 +51,16 @@ int main()
 	stdout = &usart0_str;
 	// initialize scheduler
 	initSCH();
+	// initialize HCSR04
+	initHCSR04();
 	// initialize shutter
 	initShutter();
 
+	outputPin(LED);
 	
 	// scheduler uses period in 10ms, so to get 1 sec. you use 100 to get 1000ms.
 	// then to get 60 sec. simply multiply with 60
 	// make sure no ADC tasks runs under a second, ADC can't handle that speed
-
-	setTrigger(controllerInputInterrupt);
 
 	// every second
 // 	SCHAddTask(heartbeat, 0, 100);
@@ -71,21 +72,59 @@ int main()
 	/*SCHAddTask(sendStatusUpdate, 0, (5 * 100));*/
 
 	//	These loops don't work? Something with ADC that is not working
-// 	for(int i = 0; i < MAX_TMP_READINGS;i++)
-// 	{
-// 		readTemperature();
-// 	}
-// 
-// 	for(int j = 0; j < MAX_LDR_READINGS;j++)
-// 	{
-// 		readLightValue();
-// 	}
-// 
-// 	printf("DONE CALIBRATING!\n");
+	for(int i = 0; i < MAX_TMP_READINGS;i++)
+	{
+		readTemperature();
+	}
 
-	SCHStart();
+	for(int j = 0; j < MAX_LDR_READINGS;j++)
+	{
+		readLightValue();
+	}
+
+	printf("DONE CALIBRATING!\n");
+
+	//SCHStart();
 	// keep dispatching tasks
 	while(1) {
-		SCHDispatchTasks();
+		//SCHDispatchTasks();
+		char[10] distanceS;
+		float distance = readDistance();
+		dstrf();
+		printf("distance: %c",)
 	}
+}
+
+
+//
+// main loop:
+//
+int main (void)
+{
+
+	// set as output
+	DDRB |= (1 << PB0);
+
+	char str[16];
+
+	float prevDist = 0.0;
+	// loop
+	while (1) {
+
+		float dist = getDistanceHCSR04();
+		// sensor only works till 400 cm - if it exceeds, this value
+		// just send previous reading
+		if(dist > 500) {
+			dist = prevDist;
+		}
+		// print distance to serial port
+		sprintf(str, "%f\n", dist);
+		send_str(str);
+		prevDist = dist;
+
+		// wait
+		_delay_ms(70);
+	}
+	
+	return 1;
 }
