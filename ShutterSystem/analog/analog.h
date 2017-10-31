@@ -12,6 +12,6 @@
 #include <stdint.h>
 
 void initADC();
-uint8_t readADC();
+uint16_t readADC(uint8_t);
 
 #endif /* ANALOG_H_ */
