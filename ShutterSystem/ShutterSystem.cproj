@@ -137,6 +137,12 @@
     <Compile Include="analog\analog.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="distance.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="distance.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="helpers.c">
       <SubType>compile</SubType>
     </Compile>
