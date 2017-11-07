@@ -56,7 +56,7 @@ int main()
 	// then to get 60 sec. simply multiply with 60
 	// make sure no ADC tasks runs under a second, ADC can't handle that speed
 
-	setTrigger(controllerInputInterrupt);
+	setSerialUpdateTrigger(controllerInputInterrupt);
 
 	// every second
 // 	SCHAddTask(heartbeat, 0, 100);
@@ -65,7 +65,7 @@ int main()
  	SCHAddTask(toggleLed, 0, 100);
 	
 	// every 5 seconds
-	/*SCHAddTask(sendStatusUpdate, 0, (5 * 100));*/
+	SCHAddTask(sendStatusUpdate, 0, (5 * 100));
 
 	//	These loops don't work? Something with ADC that is not working
 // 	for(int i = 0; i < MAX_TMP_READINGS;i++)

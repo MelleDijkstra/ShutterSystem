@@ -73,24 +73,11 @@
  }
 
  void sendStatusUpdate() {
-
-	// PRINT THE VALUES FOR DEBUGGING
-	char avg_temperatureS[10];
-	dtostrf(calculateAverageTemperature(), 2, 2, avg_temperatureS);
-	printf("Average temperature: %s degrees C\n", avg_temperatureS);
-
-	// send temperature
-	//transmit16(concat(TMP36,avg_temperature));
-	
-	char avg_lightS[10];
-	dtostrf(calculateAverageLightIntensity(), 2, 2, avg_lightS);
-	printf("Average light value: %s%%\n", avg_lightS);
-	
-	// send lightintensity
-	//transmit16(concat(LDR, avg_lightintensity));
-	
-	// send shutter state
-	//transmit16(concat(SHUTTER,shutter_state));
+	char avgTempS[10];
+	dtostrf(calculateAverageTemperature(), 2, 2, avgTempS);
+	char avgLightS[10];
+	dtostrf(calculateAverageLightIntensity(), 2, 2, avgLightS);
+	printf("%u:%s|%u:%s\n",TMP36, avgTempS, LDR, avgLightS);
  }
 
  void controllerInputInterrupt(uint8_t byte) {
