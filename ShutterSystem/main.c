@@ -26,10 +26,10 @@ FILE usart0_str = FDEV_SETUP_STREAM(transmitChar, NULL, _FDEV_SETUP_WRITE);
 void toggleLed() {
 	static uint8_t flag = LOW;
 	if (flag == LOW) {
-		digitalWrite(LED, HIGH);
+		setPin(LED, HIGH);
 		flag = HIGH;
 	} else {
-		digitalWrite(LED, LOW);
+		setPin(LED, LOW);
 		flag = LOW;
 	}
 }
@@ -51,6 +51,9 @@ int main()
 	stdout = &usart0_str;
 	// initialize scheduler
 	initSCH();
+	// initialize shutter
+	initShutter();
+
 	
 	// scheduler uses period in 10ms, so to get 1 sec. you use 100 to get 1000ms.
 	// then to get 60 sec. simply multiply with 60

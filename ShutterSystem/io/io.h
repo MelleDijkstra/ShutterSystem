@@ -18,6 +18,6 @@
 void outputPin(uint8_t pin);
 void inputPin(uint8_t pin);
 
-void digitalWrite(uint8_t pin, uint8_t value);
+void setPin(uint8_t pin, uint8_t value);
 
 #endif /* IO_H_ */
