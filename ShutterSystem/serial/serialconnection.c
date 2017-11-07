@@ -18,7 +18,7 @@
 void (*trigger)(uint8_t byte);
 
 // sets the trigger to given function to be notified about received data
-void setSerialUpdateTrigger(void (*trig)(uint8_t)) {
+void setTrigger(void (*trig)(uint8_t)) {
 	trigger = trig;
 }
 
