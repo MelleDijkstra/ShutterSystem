@@ -10,7 +10,8 @@
 
  #include <stdint.h>
  #include <avr/io.h>
-
+ 
+ // enables to set input pins
  void inputPin(uint8_t pin) {
 	// check which ports to use
 	if(pin < 8) {
@@ -21,7 +22,8 @@
 	}
 	// if pin is higher then 13 then do nothing...
  }
-
+ 
+ // enables to set input pins
  void outputPin(uint8_t pin) {
 	// check which ports to use
 	if(pin < 8) {
