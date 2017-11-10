@@ -137,9 +137,6 @@
     <Compile Include="analog\analog.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="distance.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="hcsr04\hcsr04.c">
       <SubType>compile</SubType>
     </Compile>

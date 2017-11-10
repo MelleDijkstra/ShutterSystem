@@ -18,12 +18,8 @@
  #include "helpers.h"
  #include "shutter.h"
 
- #define TMP_PIN	0 // TMP36 pin is on A0
- #define LDR_PIN	1 // LDR pin is on A1
- 
- // Ultrasonic sensor pins
- #define TRIG_PIN	2 // Trigger pin
- #define ECHO_PIN	3 // Echo pin
+ #define TMP_PIN 0 // TMP36 pin is on A0
+ #define LDR_PIN 1 // LDR pin is on A1
 
  // LED's to give the status of the shutter
  #define LEDRED		8
@@ -44,19 +40,11 @@
  enum state shutter_state = UP;
 
  void initShutter() {
-	// shutter state LED's
 	outputPin(LEDRED);
 	outputPin(LEDGREEN);
 	outputPin(LEDYELLOW);
-	// shutter is up by default
+	
 	setPin(LEDGREEN, HIGH);
-
-	// initialize HCSR04
-	outputPin(TRIG_PIN);
-	inputPin(ECHO_PIN);
-
-	// sets the function trigger which gets called when data is being received by serial communication
-	setSerialUpdateTrigger(controllerInputInterrupt);
  }
 
  void readTemperature() {
@@ -66,6 +54,10 @@
 	float temperature = (voltage - 0.5) * 100;
 	temperatures[t] = temperature;
 
+	char tmpS[10];
+	dtostrf(temperature, 2, 2, tmpS);
+	printf("tmp: %sC\n", tmpS);
+
 	t = (t >= MAX_TMP_READINGS-1) ? 0 : t + 1;
  }
 
@@ -73,9 +65,6 @@
 	lightvalues[l] = map(readADC(LDR_PIN), 0, 1023, 0, 100);
 	l = (l >= MAX_LDR_READINGS-1) ? 0 : l + 1;
  }
-
- // 1/0 flag to check if echo is over
- volatile char echoDone = 0;
  
  float calculateAverageTemperature() {
 	 float total = 0.0;
@@ -144,7 +133,7 @@
 
  void emulateRoll() {
 	 // emulate doing something
-	 for (uint8_t i = 0; i < 5; i++)
+	 for (uint8_t i = 0; i < 5;i++)
 	 {
 		 setPin(LEDYELLOW, HIGH);
 		 _delay_ms(500);
