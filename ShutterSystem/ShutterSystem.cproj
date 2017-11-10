@@ -140,7 +140,10 @@
     <Compile Include="distance.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="distance.h">
+    <Compile Include="hcsr04\hcsr04.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hcsr04\hcsr04.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="helpers.c">
@@ -180,6 +183,7 @@
   <ItemGroup>
     <Folder Include="analog\" />
     <Folder Include="io" />
+    <Folder Include="hcsr04" />
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
   </ItemGroup>
