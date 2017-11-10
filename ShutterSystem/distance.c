@@ -14,7 +14,7 @@
  *
  */
 
- #define F_CPU 16E6
+#define F_CPU 16E6
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -58,12 +58,10 @@ volatile uint8_t BusyMeasure = 0;
 
 void Fire_Sensor()
 {
-	setPin(TRIG, HIGH);
-	// PORTD |= (1<<TRIG);				// Set TRIG pin high for 10us to start measure.
-	BusyMeasure = 1;               // We going to start new measure, so sensor is busy !
-	_delay_us(15);					// 10us Delay.
-	setPin(TRIG, LOW);
-	// PORTD &= ~(1<<TRIG);			// Set TRIG pin LOW.
+	setPin(TRIG, HIGH);			// Set TRIG pin high for 10us to start measure.
+	BusyMeasure = 1;            // We going to start new measure, so sensor is busy !
+	_delay_us(10);				// 10us Delay.
+	setPin(TRIG, LOW);			// Set TRIG pin LOW.
 }
 
 int main(void)
@@ -74,21 +72,15 @@ int main(void)
 
 	// INT1 Use/Configuration
 	inputPin(ECHO);
-	// DDRD &= ~(1<<INT1_pin);		// Set PD2 as input (Using for interrupt INT1).
 	setPin(ECHO, HIGH);
-	// PORTD |= (1<<INT1_pin);		// Enable PD2 pull-up resistor.
-	EICRA |= (1<<ISC10);
-	EIMSK |= (1<<INT1);
-	// GICR  |= (1<<INT1);			// Enable INT1 interrupts.
-	// MCUCR |= (1<<ISC10) ;		// Trigger INT1 on any logic change.
+
+	init_ext_int();
 	
 	// Trig Conf
 	outputPin(TRIG);
-	// DDRD |= (1<<Trig);			// Triger pin as output
 	setPin(TRIG, LOW);
-	//PORTD &= ~(1<<Trig);		// LOW
 
-	// Use/Configuration	 of Timer0 (8 bit timer)
+	// Use/Configuration of Timer0 (8 bit timer)
 	init_timer();
 
 	sei();										// Global interrupts Enabled.
@@ -97,11 +89,12 @@ int main(void)
 		if (BusyMeasure == 0)
 		{
 			Fire_Sensor();
-			_delay_ms(60);
+			_delay_ms(30);
 		}
 		
-		printf("cm: %u, ", calc_cm(gv_counter));
-		_delay_ms(1000);
+		printf("gv_counter: %u\n", gv_counter);
+		printf("cm: %u\n", calc_cm(gv_counter));
+		_delay_ms(250);
 	};
 
     return 0;
@@ -113,8 +106,9 @@ ISR (INT1_vect)
 	{
 		// set timer value to 0
 		TCNT1 = 0;
+		gv_counter = 0;
 		// start timer
-		TCCR1B = (1<<CS10);
+		TCCR1B |= (1 << CS10);
 		gv_echo = END;
 	} else {				// low pulse 1 --> 0 , result is ready
 		// get timer value how long it took to receive ECHO
