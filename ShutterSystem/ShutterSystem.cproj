@@ -51,6 +51,8 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -170,12 +172,19 @@
     <Compile Include="shutter.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="storage\eeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="analog\" />
     <Folder Include="io" />
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
+    <Folder Include="storage\" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
