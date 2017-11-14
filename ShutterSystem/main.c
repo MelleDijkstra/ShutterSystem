@@ -15,6 +15,7 @@
 #include "analog/analog.h"
 #include "scheduler/scheduler.h"
 #include "serial/serialconnection.h"
+#include "storage/eeprom.h"
 #include "helpers.h"
 #include "shutter.h"
 
@@ -66,21 +67,30 @@ int main()
  	SCHAddTask(toggleLed, 0, 1000);
 	
 	// every 5 seconds
+<<<<<<< HEAD
+	/*SCHAddTask(sendStatusUpdate, 0, (5 * 100));*/
+=======
 	SCHAddTask(sendStatusUpdate, 0, (5 * 1000));
+>>>>>>> master
 
 	//	These loops don't work? Something with ADC that is not working
-// 	for(int i = 0; i < MAX_TMP_READINGS;i++)
-// 	{
-// 		readTemperature();
-// 	}
-// 
-// 	for(int j = 0; j < MAX_LDR_READINGS;j++)
-// 	{
-// 		readLightValue();
-// 	}
-// 
-// 	printf("DONE CALIBRATING!\n");
-
+	// 	for(int i = 0; i < MAX_TMP_READINGS;i++)
+	// 	{
+	// 		readTemperature();
+	// 	}
+	// 
+	// 	for(int j = 0; j < MAX_LDR_READINGS;j++)
+	// 	{
+	// 		readLightValue();
+	// 	}
+	// 
+	// 	printf("DONE CALIBRATING!\n");
+	
+	
+	//saveMaxTmpSetting(25);
+	//uint8_t read = loadMaxTmpSetting();
+	//printf("Max temp: %u", read);
+	
 	SCHStart();
 	// keep dispatching tasks
 	while(1) {
