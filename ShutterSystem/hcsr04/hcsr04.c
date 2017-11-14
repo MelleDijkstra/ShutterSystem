@@ -17,7 +17,7 @@
 volatile uint16_t counter = 0; // 16 bit counter value
 volatile uint8_t echoFlag = BEGIN; // flag for when to stop or start counting
 
-volatile uint8_t BusyMeasuring = 0; // flag when busy measuring
+volatile uint8_t busyMeasuring = 0; // flag when busy measuring
 
 void initHCSR04() {
 	// enables INT1 
@@ -27,7 +27,6 @@ void initHCSR04() {
 
 	// set ECHO as input pin
 	inputPin(ECHO);
-	// CHECK IF THIS IS NEEDED!!!!!
 	setPin(ECHO, HIGH);
 	
 	// TRIG is output pin, so it can send burst for the ECHO pin to receive
@@ -46,7 +45,7 @@ void fireSensor()
 	setPin(TRIG, LOW);			// set trig pin LOW, just to be sure
 	_delay_ms(1);
 	setPin(TRIG, HIGH);			// set TRIG pin high for 10us to start measure
-	BusyMeasuring = 1;            // we going to start new measure, so sensor is busy!
+	busyMeasuring = 1;            // we going to start new measure, so sensor is busy!
 	_delay_us(12);				// at least 10us delay
 	setPin(TRIG, LOW);			// set TRIG pin LOW
 }
@@ -71,7 +70,7 @@ void kickEcho() {
 }
 
 uint16_t measureDistance() {
-	if (BusyMeasuring == 0)
+	if (busyMeasuring == 0)
 	{
 		fireSensor();
 		// wait till measure is done
@@ -110,7 +109,7 @@ ISR (INT1_vect)
 		counter = TCNT1;
 		// stop timer
 		TCCR1B = 0;
-		BusyMeasuring = 0;
+		busyMeasuring = 0;
 		echoFlag = BEGIN;
 	}
 }
