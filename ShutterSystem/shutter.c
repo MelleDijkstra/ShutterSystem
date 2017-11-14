@@ -15,6 +15,7 @@
 #include "io/io.h"
 #include "analog/analog.h"
 #include "serial/serialconnection.h"
+#include "hcsr04/hcsr04.h"
 #include "helpers.h"
 #include "shutter.h"
 
@@ -22,14 +23,23 @@
 #define LDR_PIN 1 // LDR pin is on A1
 
 // LED's to give the status of the shutter
-#define LEDRED		8
-#define LEDGREEN	9
-#define LEDYELLOW	10
+#define LEDRED			8
+#define LEDGREEN		9
+#define LEDYELLOW		10
 
 // ID's are used for serial communication
-#define TMP36		1
-#define LDR		2
-#define SHUTTER	3
+#define TMP36			1
+#define LDR				2
+#define SHUTTER3
+
+// message types
+#define MAX_ROLL_DIST	1
+#define MIN_ROLL_DIST	2
+#define ROLL			3
+#define TMP_UPPER_LIMIT 4
+#define TMP_LOWER_LIMIT 5
+#define LDR_UPPER_LIMIT 6
+#define LDR_LOWER_LIMIT 7
 
 float temperatures[MAX_TMP_READINGS];
 uint16_t lightvalues[MAX_LDR_READINGS];
@@ -47,7 +57,8 @@ void initShutter() {
 	setPin(LEDGREEN, HIGH);
 
 	setSerialUpdateTrigger(controllerInputInterrupt);
-	// TODO: read HCSR04 to get the state of the shutter
+	// initialize HCSR04
+	initHCSR04();
 }
 
 void readTemperature() {
@@ -89,6 +100,10 @@ float calculateAverageLightIntensity() {
 	return total / validReadings;
 }
 
+void readDistance() {
+	printf("%u cm\n", measureDistance());
+}
+
 void sendStatusUpdate() {
 	char avgTempS[10];
 	dtostrf(calculateAverageTemperature(), 2, 2, avgTempS);
@@ -98,12 +113,29 @@ void sendStatusUpdate() {
 }
 
 void processMessage(uint8_t msg[2]) {
-	if(msg[0] == 3) {
-		if(msg[1] == DOWN) {
-			roll(DOWN);
-		} else if (msg[1] == UP) {
-			roll(UP);
-		}	 
+	switch(msg[0]) {
+		case MAX_ROLL_DIST:
+			// TODO: save max roll distance
+			break;
+		case MIN_ROLL_DIST:
+			// TODO: save min roll distance
+			break;
+		case ROLL:
+			msg[1] &= 1; // make sure 2th bit is 0 or 1
+			roll(msg[1]); // msg[1] is 0 = UP or 1 = UP
+			break;
+		case TMP_UPPER_LIMIT:
+			// TODO: save min roll distance
+			break;
+		case TMP_LOWER_LIMIT:
+			// TODO: save min roll distance
+			break;
+		case LDR_UPPER_LIMIT:
+			// TODO: save min roll distance
+			break;
+		case LDR_LOWER_LIMIT:
+			// TODO: save min roll distance
+			break;
 	}
 }
 

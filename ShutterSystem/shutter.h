@@ -24,6 +24,7 @@ void readLightValue();
 void readTemperature();
 float calculateAverageTemperature();
 float calculateAverageLightIntensity();
+void readDistance();
 
 void roll(enum state s);
 void emulateRoll();

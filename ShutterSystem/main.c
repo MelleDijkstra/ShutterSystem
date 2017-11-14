@@ -34,12 +34,6 @@ void toggleLed() {
 	}
 }
 
-void heartbeat() {
-	static int tick = 1;
-	printf("%u bonk bonk\n", tick);
-	tick++;
-}
-
 int main()
 {
 	// use debug led to check if scheduler is still running
@@ -55,20 +49,21 @@ int main()
 	// initialize shutter
 	initShutter();
 
-	// scheduler uses period in 10ms, so to get 1 sec. you use 100 to get 1000ms.
+	// scheduler uses period of 1ms, so to get 1 sec. you use 1000ms.
 	// then to get 60 sec. simply multiply with 60
 	// make sure no ADC tasks runs under a second, ADC can't handle that speed
 
 	// every second
-// 	SCHAddTask(heartbeat, 0, 100);
+	//SCHAddTask(heartbeat, 0, 1000);
 	SCHAddTask(readTemperature, 0, 1000);
 	SCHAddTask(readLightValue, 0, 1000);
- 	SCHAddTask(toggleLed, 0, 1000);
+	SCHAddTask(toggleLed, 0, 1000);
+	//SCHAddTask(readDistance, 0, 1000);
 	
 	// every 5 seconds
-	SCHAddTask(sendStatusUpdate, 0, (5 * 1000));
+	SCHAddTask(sendStatusUpdate, 1200, (5 * 1000)); // wait 1 second so a few reading values have been read already
 
-	//	These loops don't work? Something with ADC that is not working
+	// fill the temperature and light readings, so we have something to work with
 // 	for(int i = 0; i < MAX_TMP_READINGS;i++)
 // 	{
 // 		readTemperature();
@@ -78,8 +73,6 @@ int main()
 // 	{
 // 		readLightValue();
 // 	}
-// 
-// 	printf("DONE CALIBRATING!\n");
 
 	SCHStart();
 	// keep dispatching tasks
