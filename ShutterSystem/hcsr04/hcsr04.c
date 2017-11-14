@@ -27,7 +27,6 @@ void initHCSR04() {
 
 	// set ECHO as input pin
 	inputPin(ECHO);
-	// CHECK IF THIS IS NEEDED!!!!!
 	setPin(ECHO, HIGH);
 	
 	// TRIG is output pin, so it can send burst for the ECHO pin to receive
@@ -80,7 +79,6 @@ uint16_t measureDistance() {
 	}
 	
 	if(counter == 0) {
-		printf("too far away\n");
 		kickEcho();
 	}
 
