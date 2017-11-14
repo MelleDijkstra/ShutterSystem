@@ -30,5 +30,6 @@ void emulateRoll();
 
 void sendStatusUpdate();
 void controllerInputInterrupt(uint8_t byte);
+void processMessage(uint8_t msg[2]);
 
 #endif /* SHUTTER_H_ */

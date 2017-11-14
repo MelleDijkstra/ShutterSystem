@@ -51,8 +51,6 @@
       </ToolNumber>
       <ToolName xmlns="">Simulator</ToolName>
     </com_atmel_avrdbg_tool_simulator>
-    <ResetRule>0</ResetRule>
-    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -139,6 +137,12 @@
     <Compile Include="analog\analog.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="hcsr04\hcsr04.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hcsr04\hcsr04.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="helpers.c">
       <SubType>compile</SubType>
     </Compile>
@@ -182,9 +186,10 @@
   <ItemGroup>
     <Folder Include="analog\" />
     <Folder Include="io" />
+    <Folder Include="hcsr04" />
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
-    <Folder Include="storage\" />
+	<Folder Include="storage\" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

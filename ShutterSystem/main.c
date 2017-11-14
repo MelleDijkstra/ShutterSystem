@@ -43,6 +43,7 @@ void heartbeat() {
 
 int main()
 {
+	// use debug led to check if scheduler is still running
 	outputPin(LED);
 	// initialize ADC
 	initADC();
@@ -55,21 +56,22 @@ int main()
 	// initialize shutter
 	initShutter();
 
-	
 	// scheduler uses period in 10ms, so to get 1 sec. you use 100 to get 1000ms.
 	// then to get 60 sec. simply multiply with 60
 	// make sure no ADC tasks runs under a second, ADC can't handle that speed
 
-	setSerialUpdateTrigger(controllerInputInterrupt);
-
 	// every second
 // 	SCHAddTask(heartbeat, 0, 100);
-// 	SCHAddTask(readTemperature, 0, 100);
-// 	SCHAddTask(readLightValue, 0, 100);
- 	SCHAddTask(toggleLed, 0, 100);
+	SCHAddTask(readTemperature, 0, 1000);
+	SCHAddTask(readLightValue, 0, 1000);
+ 	SCHAddTask(toggleLed, 0, 1000);
 	
 	// every 5 seconds
+<<<<<<< HEAD
 	/*SCHAddTask(sendStatusUpdate, 0, (5 * 100));*/
+=======
+	SCHAddTask(sendStatusUpdate, 0, (5 * 1000));
+>>>>>>> master
 
 	//	These loops don't work? Something with ADC that is not working
 	// 	for(int i = 0; i < MAX_TMP_READINGS;i++)
