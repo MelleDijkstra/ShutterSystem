@@ -137,6 +137,12 @@
     <Compile Include="analog\analog.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="hcsr04\hcsr04.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="hcsr04\hcsr04.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="helpers.c">
       <SubType>compile</SubType>
     </Compile>
@@ -170,12 +176,20 @@
     <Compile Include="shutter.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="storage\eeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="analog\" />
     <Folder Include="io" />
+    <Folder Include="hcsr04" />
     <Folder Include="scheduler\" />
     <Folder Include="serial\" />
+	<Folder Include="storage\" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
