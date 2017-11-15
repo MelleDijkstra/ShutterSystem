@@ -55,16 +55,13 @@ int main()
 	// make sure no ADC tasks runs under a second, ADC can't handle that speed
 
 	// every second
-	//SCHAddTask(heartbeat, 0, 1000);
 	SCHAddTask(readTemperature, 0, 1000);
 	SCHAddTask(readLightValue, 0, 1000);
 	SCHAddTask(toggleLed, 0, 1000);
-	//SCHAddTask(readDistance, 0, 1000);
 	
 	// every 5 seconds
 	SCHAddTask(sendStatusUpdate, 0, (5 * 1000));
 
-	//	These loops don't work? Something with ADC that is not working
 	// 	for(int i = 0; i < MAX_TMP_READINGS;i++)
 	// 	{
 	// 		readTemperature();

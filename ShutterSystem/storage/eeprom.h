@@ -17,7 +17,7 @@
 #define LIGHTUPPER 6
 #define LIGHTLOWER 7
 
-void saveMaxTmpSetting(uint8_t tmp);
+void saveMaxTmp(uint8_t tmp);
 void saveMaxDownDist(uint8_t dist);
 void saveMaxUpDist(uint8_t dist);
 void saveMaxTemp(uint8_t tmp);
@@ -25,6 +25,11 @@ void saveMinTemp(uint8_t tmp);
 void saveMaxLight(uint8_t light);
 void saveMinLight(uint8_t light);
 
-uint8_t loadMaxTmpSetting();
+uint8_t loadMaxTmp();
+uint8_t loadMaxDownDist();
+uint8_t loadMaxUpDist();
+uint8_t loadMinTemp();
+uint8_t loadMaxLight();
+uint8_t loadMinLight();
 
 #endif /* EEPROM_H_ */
